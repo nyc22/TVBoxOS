@@ -90,6 +90,7 @@ import org.xwalk.core.XWalkWebResourceResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -230,27 +231,9 @@ public class PlayActivity extends BaseActivity {
             @Override
             public void prepared() {
                 initSubtitleView();
-                initVideoDurationSomeThing();
             }
         });
         mVideoView.setVideoController(mController);
-    }
-
-    void initVideoDurationSomeThing() {
-        videoDuration = mVideoView.getMediaPlayer().getDuration();
-        if (videoDuration ==0) {
-            mController.mPlayerSpeedBtn.setVisibility(View.GONE);
-            mController.mPlayerTimeStartEndText.setVisibility(View.GONE);
-            mController.mPlayerTimeStartBtn.setVisibility(View.GONE);
-            mController.mPlayerTimeSkipBtn.setVisibility(View.GONE);
-            mController.mPlayerTimeResetBtn.setVisibility(View.GONE);
-        }else {
-            mController.mPlayerSpeedBtn.setVisibility(View.VISIBLE);
-            mController.mPlayerTimeStartEndText.setVisibility(View.VISIBLE);
-            mController.mPlayerTimeStartBtn.setVisibility(View.VISIBLE);
-            mController.mPlayerTimeSkipBtn.setVisibility(View.VISIBLE);
-            mController.mPlayerTimeResetBtn.setVisibility(View.VISIBLE);
-        }
     }
 
     //设置字幕
@@ -941,6 +924,14 @@ public class PlayActivity extends BaseActivity {
 
     ExecutorService parseThreadPool;
 
+    private String encodeUrl(String url) {
+        try {
+            return URLEncoder.encode(url, "UTF-8");
+        } catch (Exception e) {
+            return url;
+        }
+    }
+
     private void doParse(ParseBean pb) {
         stopParse();
         initParseLoadFound();
@@ -988,7 +979,7 @@ public class PlayActivity extends BaseActivity {
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-            OkGo.<String>get(pb.getUrl() + webUrl)
+            OkGo.<String>get(pb.getUrl() + encodeUrl(webUrl))
                     .tag("json_jx")
                     .headers(reqHeaders)
                     .execute(new AbsCallback<String>() {
